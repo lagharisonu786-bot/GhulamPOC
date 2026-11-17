@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Products — Student POC</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 750px; margin: 40px auto; padding: 0 20px; color: #222; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        caption { text-align: left; margin-bottom: 10px; font-weight: bold; }
+        th, td { border: 1px solid #ccc; padding: 12px; text-align: left; }
+        th { background-color: #eee; }
+        footer { margin-top: 30px; padding-top: 15px; border-top: 1px solid #ccc; font-size: .9rem; }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>Food Products</h1>
+        <p>Available food items from our mock database.</p>
+        <p id="status" role="status">Loading food items...</p>
+        <table>
+            <caption>Food prices in Canadian dollars</caption>
+            <thead><tr><th scope="col">ID</th><th scope="col">Food</th><th scope="col">Price (CAD)</th></tr></thead>
+            <tbody id="food-list"></tbody>
+        </table>
+    </main>
+    <footer><strong>Student Work Disclaimer:</strong>
+        This application is ONLY for demonstrating a student's web development skills.
+        It is not a real food ordering service.
+    </footer>
+    <script>
+        const foodList = document.getElementById("food-list");
+        const statusMessage = document.getElementById("status");
+        // Fetch the food API and dynamically populate the table.
+        async function loadFoods() {
+            try {
+                const response = await fetch("/foods");
+                if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
+                const foods = await response.json();
+                foodList.replaceChildren();
+                foods.forEach(food => {
+                    const row = document.createElement("tr");
+                    const idCell = document.createElement("td");
+                    const nameCell = document.createElement("td");
+                    const priceCell = document.createElement("td");
+                    idCell.textContent = food.id;
+                    nameCell.textContent = food.name;
+                    priceCell.textContent = `$${food.price.toFixed(2)}`;
+                    row.append(idCell, nameCell, priceCell);
+                    foodList.appendChild(row);
+                });
+                statusMessage.textContent = `${foods.length} food items loaded.`;
+            } catch (error) {
+                console.error("Unable to load foods:", error);
+                statusMessage.textContent = "Unable to load food items. Please try again later.";
+            }
+        }
+        loadFoods();
+    </script>
+</body>
+</html>
